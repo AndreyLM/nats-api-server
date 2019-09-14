@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	apiserver "github.com/andreylm/nats-api-server.git/pkg/api-server"
+	apiserver "github.com/andreylm/nats-api-server/pkg/api-server"
 	component "github.com/andreylm/nats-component"
 	nats "github.com/nats-io/go-nats"
 )
