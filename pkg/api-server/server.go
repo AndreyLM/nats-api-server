@@ -13,7 +13,8 @@ var Version = "v1.0.0"
 
 // Server - api server
 type Server struct {
-	Component *component.Component
+	Component            *component.Component
+	NATSMonitoringServer string
 }
 
 // ListenAndServe - listen and serve
@@ -21,6 +22,7 @@ func (s *Server) ListenAndServe(host string) error {
 	r := mux.NewRouter()
 	r.HandleFunc("/", s.showVersion)
 	r.HandleFunc("/services", s.showServices)
+	r.HandleFunc("/service/{uuid}", s.showServiceStatus)
 
 	srv := &http.Server{
 		Handler:      r,

@@ -12,11 +12,14 @@ import (
 )
 
 var (
-	showHelp     bool
-	showVersion  bool
-	serverListen string
-	natsServers  string
-	systemTopic  string
+	showHelp             bool
+	showVersion          bool
+	serverListen         string
+	natsServers          string
+	systemTopic          string
+	natsUser             string
+	natsSecret           string
+	natsMonitoringServer string
 )
 
 func init() {
@@ -30,6 +33,10 @@ func init() {
 	flag.StringVar(&serverListen, "listen", "0.0.0.0:9090", "Network host:port to listen to")
 	flag.StringVar(&natsServers, "nats", nats.DefaultURL, "Network host:port to listen to")
 	flag.StringVar(&systemTopic, "nats-system-topic", "_NATS_SYSTEM_TOPIC", "Main NATS topic for discover and status usage")
+	flag.StringVar(&natsUser, "nats-user", "", "NATS user")
+	flag.StringVar(&natsSecret, "nats-secret", "", "NATS secret")
+	flag.StringVar(&natsMonitoringServer, "nats-monitoring", "http://localhost:8222", "NATS secret")
+
 	flag.Parse()
 
 	switch {
@@ -45,10 +52,13 @@ func init() {
 func main() {
 	log.Printf("Host: %s, Starting NATS API Server version %s", serverListen, apiserver.Version)
 	component := component.NewComponent("api-server")
-	component.SetupConnectionToNATS(natsServers, systemTopic)
+	if err := component.SetupConnectionToNATS(natsServers, systemTopic, nats.UserInfo(natsUser, natsSecret)); err != nil {
+		log.Fatal(err)
+	}
 
 	server := apiserver.Server{
-		Component: component,
+		Component:            component,
+		NATSMonitoringServer: natsMonitoringServer,
 	}
 
 	if err := server.ListenAndServe(serverListen); err != nil {
