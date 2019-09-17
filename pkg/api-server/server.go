@@ -9,7 +9,7 @@ import (
 )
 
 // Version - api server version
-var Version = "v1.0.0"
+var Version = "v1"
 
 // Server - api server
 type Server struct {
